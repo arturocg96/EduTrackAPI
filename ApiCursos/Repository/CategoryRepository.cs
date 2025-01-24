@@ -12,7 +12,7 @@ namespace ApiCursos.Repository
         {
             _db = db;
         }
-
+        
         public bool UpdateCategory(Category category)
         {
             category.CreationDate = DateTime.Now;

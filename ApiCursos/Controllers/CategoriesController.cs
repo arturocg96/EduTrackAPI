@@ -1,6 +1,7 @@
 ﻿using ApiCursos.Models;
 using ApiCursos.Models.Dtos.CategoryDtos;
 using ApiCursos.Repository.IRepository;
+using Microsoft.AspNetCore.Http;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
@@ -83,7 +84,7 @@ namespace ApiCursos.Controllers
                     return StatusCode(StatusCodes.Status500InternalServerError, ModelState);
                 }
 
-                return CreatedAtRoute("GetCategoryById", new { id = category.Id }, category);
+                return CreatedAtRoute("GetCategoryById", new { categoryId = category.Id }, category);
             }
             catch (Exception ex)
             {
@@ -91,8 +92,9 @@ namespace ApiCursos.Controllers
             }
         }
 
+
         [HttpPatch("{categoryId:int}", Name = "PatchCategoryById")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -118,7 +120,16 @@ namespace ApiCursos.Controllers
                     return StatusCode(StatusCodes.Status500InternalServerError, ModelState);
                 }
 
-                return NoContent();
+                var updatedCategory = _ctRepo.GetCategory(categoryId);
+
+                if (updatedCategory == null)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Failed to retrieve the updated category.");
+                }
+
+                var updatedCategoryDto = _mapper.Map<CategoryDto>(updatedCategory);
+
+                return Ok(updatedCategoryDto);
             }
             catch (Exception ex)
             {
@@ -126,8 +137,9 @@ namespace ApiCursos.Controllers
             }
         }
 
+
         [HttpPut("{categoryId:int}", Name = "PutCategoryById")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -149,7 +161,7 @@ namespace ApiCursos.Controllers
                 var categoryThatExists = _ctRepo.GetCategory(categoryId);
                 if (categoryThatExists == null)
                 {
-                    return NotFound($"Not found the category with id {categoryId}");
+                    return NotFound($"Category with ID {categoryId} not found.");
                 }
 
                 var category = _mapper.Map<Category>(categoryDto);
@@ -159,16 +171,28 @@ namespace ApiCursos.Controllers
                     ModelState.AddModelError("", $"Something went wrong updating the category {category.Name}");
                     return StatusCode(StatusCodes.Status500InternalServerError, ModelState);
                 }
+                
+                var updatedCategory = _ctRepo.GetCategory(categoryId);
 
-                return NoContent();
+                if (updatedCategory == null)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Failed to retrieve the updated category.");
+                }
+                
+                var updatedCategoryDto = _mapper.Map<CategoryDto>(updatedCategory);
+
+                return Ok(updatedCategoryDto);
             }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
             }
         }
+
+
+
         [HttpDelete("{categoryId:int}", Name = "DeleteCategoryById")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -176,7 +200,7 @@ namespace ApiCursos.Controllers
         public IActionResult DeleteCategory(int categoryId)
         {
             try
-            {                
+            {
                 if (!_ctRepo.CategoryExists(categoryId))
                 {
                     return NotFound($"Category with ID {categoryId} not found.");
@@ -188,20 +212,21 @@ namespace ApiCursos.Controllers
                     return NotFound($"Category with ID {categoryId} could not be retrieved.");
                 }
 
+                var categoryDto = _mapper.Map<CategoryDto>(category);
+
                 if (!_ctRepo.DeleteCategory(category))
                 {
                     ModelState.AddModelError("", $"Something went wrong deleting the category {category.Name}");
                     return StatusCode(StatusCodes.Status500InternalServerError, ModelState);
                 }
 
-                return NoContent();
+                return Ok(categoryDto);
             }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
             }
         }
-s
 
 
     }
