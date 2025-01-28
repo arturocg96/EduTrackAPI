@@ -2,6 +2,7 @@
 
 namespace ApiCursos.Models.Dtos.CourseDtos
 {
+
     public class CourseDto
     {
         public int Id { get; set; }

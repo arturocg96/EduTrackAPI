@@ -4,10 +4,11 @@ using ApiCursos.Repository.IRepository;
 using Microsoft.AspNetCore.Http;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ApiCursos.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/categories")]
     [ApiController]
     public class CategoriesController : ControllerBase
     {
@@ -20,7 +21,8 @@ namespace ApiCursos.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [AllowAnonymous]
+        [HttpGet]        
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult GetCategories()
@@ -32,6 +34,7 @@ namespace ApiCursos.Controllers
             return Ok(categoriesListDto);
         }
 
+        [AllowAnonymous]
         [HttpGet("{categoryId:int}", Name = "GetCategoryById")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -51,6 +54,7 @@ namespace ApiCursos.Controllers
             return Ok(itemCategoryDto);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -92,7 +96,7 @@ namespace ApiCursos.Controllers
             }
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPatch("{categoryId:int}", Name = "PatchCategoryById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -137,7 +141,7 @@ namespace ApiCursos.Controllers
             }
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPut("{categoryId:int}", Name = "PutCategoryById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -190,7 +194,7 @@ namespace ApiCursos.Controllers
         }
 
 
-
+        //[Authorize(Roles = "Admin")]
         [HttpDelete("{categoryId:int}", Name = "DeleteCategoryById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

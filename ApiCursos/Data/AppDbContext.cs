@@ -11,6 +11,8 @@ namespace ApiCursos.Data{
         
             public DbSet<Course> Course { get; set; }
 
+            public DbSet<User> User { get; set; }
+
 
     }
 }
