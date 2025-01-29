@@ -5,10 +5,10 @@ namespace ApiCursos.Repository.IRepository
 {
     public interface IUser
     {
-        ICollection<User> GetUsers();
-        User GetUser(int userId);
+        ICollection<UserApp> GetUsers();
+        UserApp? GetUser(string userId);
         bool IsUniqueUser(string username);
-        Task<UserLoginResponseDto> Login(UserLoginDto UserLoginDto);
-        Task<User> Register(UserRegisterDto UserRegisterDto);
+        Task<UserLoginResponseDto> Login(UserLoginDto userLoginDto);
+        Task<UserDataDto?> Register(UserRegisterDto userRegisterDto);
     }
 }

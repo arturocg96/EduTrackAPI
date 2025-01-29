@@ -12,6 +12,9 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Asp.Versioning;
+using System.Numerics;
+using Microsoft.AspNetCore.Identity;
+using ApiCursos.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigureServices(builder);
@@ -22,6 +25,7 @@ app.Run();
 static void ConfigureServices(WebApplicationBuilder builder)
 {
     AddDatabase(builder);
+    AddIdentity(builder);
     AddRepositories(builder);
     AddAuthentication(builder);
     AddVersioning(builder);
@@ -30,6 +34,21 @@ static void ConfigureServices(WebApplicationBuilder builder)
     ConfigureCache(builder);
     AddAutoMapper(builder);
     builder.Services.AddControllers();
+}
+
+static void AddIdentity(WebApplicationBuilder builder)
+{
+    builder.Services
+        .AddIdentity<UserApp, IdentityRole>(options =>
+        {
+            options.Password.RequiredLength = 8;
+            options.Password.RequireNonAlphanumeric = true;
+            options.Password.RequireDigit = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireUppercase = true;
+        })
+        .AddEntityFrameworkStores<ApplicationDbContext>()
+        .AddDefaultTokenProviders();
 }
 
 static void AddVersioning(WebApplicationBuilder builder)

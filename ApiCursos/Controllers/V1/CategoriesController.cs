@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Asp.Versioning;
 
-namespace ApiCursos.Controllers
+namespace ApiCursos.Controllers.V1
 {
     [Route("api/v{version:apiVersion}/categories")]
     [ApiVersion("1.0")]
@@ -24,7 +24,7 @@ namespace ApiCursos.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet]        
+        [HttpGet]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult GetCategories()
@@ -177,14 +177,14 @@ namespace ApiCursos.Controllers
                     ModelState.AddModelError("", $"Something went wrong updating the category {category.Name}");
                     return StatusCode(StatusCodes.Status500InternalServerError, ModelState);
                 }
-                
+
                 var updatedCategory = _ctRepo.GetCategory(categoryId);
 
                 if (updatedCategory == null)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, "Failed to retrieve the updated category.");
                 }
-                
+
                 var updatedCategoryDto = _mapper.Map<CategoryDto>(updatedCategory);
 
                 return Ok(updatedCategoryDto);

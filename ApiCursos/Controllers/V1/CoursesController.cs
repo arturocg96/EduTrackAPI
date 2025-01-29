@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ApiCursos.Controllers
+namespace ApiCursos.Controllers.V1
 {
     [Route("api/v{version:apiVersion}/courses")]
     [ApiVersion("1.0")]
@@ -18,11 +18,12 @@ namespace ApiCursos.Controllers
         private readonly ICourse _courRepo;
         private readonly IMapper _mapper;
 
-        public CoursesController(ICourse courRepo, IMapper mapper) { 
-        
+        public CoursesController(ICourse courRepo, IMapper mapper)
+        {
+
             _courRepo = courRepo;
-            _mapper = mapper;        
-        
+            _mapper = mapper;
+
         }
 
         [AllowAnonymous]
@@ -106,7 +107,7 @@ namespace ApiCursos.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdatePatchCourse (int courseId, [FromBody] CourseDto courseDto)
+        public IActionResult UpdatePatchCourse(int courseId, [FromBody] CourseDto courseDto)
         {
             try
             {

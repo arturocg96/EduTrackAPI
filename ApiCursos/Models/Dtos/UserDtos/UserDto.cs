@@ -1,14 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace ApiCursos.Models.Dtos.UserDtos
+﻿namespace ApiCursos.Models.Dtos.UserDtos
 {
     public class UserDto
-    {      
-        public int Id { get; set; }
-        public string Username { get; set; }
-        public string Name { get; set; }
-        public string Password { get; set; }
-        public string Role { get; set; }
-
+    {
+        public string Id { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
     }
 }
