@@ -5,10 +5,12 @@ using Microsoft.AspNetCore.Http;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Asp.Versioning;
 
 namespace ApiCursos.Controllers
 {
-    [Route("api/categories")]
+    [Route("api/v{version:apiVersion}/categories")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class CategoriesController : ControllerBase
     {

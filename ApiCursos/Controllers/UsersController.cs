@@ -7,11 +7,14 @@ using ApiCursos.Models.Dtos.CategoryDtos;
 using ApiCursos.Models;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
+using Asp.Versioning;
 
 namespace ApiCursos.Controllers
 {
-    [Route("api/users")]
+    [Route("api/v{version:apiVersion}/users")]
+    [ApiVersion("1.0")]
     [ApiController]
+
     public class UsersController : ControllerBase
     {
         private readonly IUser _usRepo;
@@ -26,7 +29,8 @@ namespace ApiCursos.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpGet]
+        [HttpGet]       
+        [ResponseCache(CacheProfileName= "Default30Seconds")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
 

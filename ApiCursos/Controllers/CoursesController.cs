@@ -2,6 +2,7 @@
 using ApiCursos.Models.Dtos.CategoryDtos;
 using ApiCursos.Models.Dtos.CourseDtos;
 using ApiCursos.Repository.IRepository;
+using Asp.Versioning;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -9,7 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ApiCursos.Controllers
 {
-    [Route("api/courses")]
+    [Route("api/v{version:apiVersion}/courses")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class CoursesController : ControllerBase
     {
