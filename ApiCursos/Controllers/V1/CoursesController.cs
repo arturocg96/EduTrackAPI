@@ -65,7 +65,7 @@ namespace ApiCursos.Controllers.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public IActionResult CreateCourse([FromBody] CreateCourseDto createCourseDto)
+        public IActionResult CreateCourse([FromForm] CreateCourseDto createCourseDto)
         {
             try
             {
@@ -87,11 +87,47 @@ namespace ApiCursos.Controllers.V1
 
                 var course = _mapper.Map<Course>(createCourseDto);
 
-                if (!_courRepo.CreateCourse(course))
+                if (createCourseDto.Image != null)
                 {
-                    ModelState.AddModelError("", $"Something went wrong saving the course {course.Name}");
-                    return StatusCode(StatusCodes.Status500InternalServerError, ModelState);
+                    // Validación básica de tipo de archivo
+                    var extension = Path.GetExtension(createCourseDto.Image.FileName).ToLower();
+                    if (extension != ".jpg" && extension != ".jpeg" && extension != ".png")
+                    {
+                        return BadRequest("Only .jpg, .jpeg and .png files are allowed.");
+                    }
+
+                    string fileName = course.Id + Guid.NewGuid().ToString() + extension;
+                    string fileRoute = @"wwwroot\CoursesImages\" + fileName;
+                    var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), fileRoute);
+
+                    // Asegurarnos que el directorio existe
+                    var directory = Path.GetDirectoryName(directoryPath);
+                    if (!Directory.Exists(directory))
+                    {
+                        Directory.CreateDirectory(directory);
+                    }
+
+                    FileInfo file = new FileInfo(directoryPath);
+                    if (file.Exists)
+                    {
+                        file.Delete();
+                    }
+
+                    using (var fileStream = new FileStream(directoryPath, FileMode.Create))
+                    {
+                        createCourseDto.Image.CopyTo(fileStream);
+                    }
+
+                    var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
+                    course.ImageRoute = baseUrl + "/CoursesImages/" + fileName;
+                    course.ImageLocalRoute = fileRoute;
                 }
+                else
+                {
+                    course.ImageRoute = "https://placehold.co/600x400";
+                }
+
+                _courRepo.CreateCourse(course);
 
                 return CreatedAtRoute("GetCourseById", new { courseId = course.Id }, course);
             }
@@ -107,7 +143,7 @@ namespace ApiCursos.Controllers.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdatePatchCourse(int courseId, [FromBody] CourseDto courseDto)
+        public IActionResult UpdatePatchCourse(int courseId, [FromForm] UpdateCourseDto updateCourseDto)
         {
             try
             {
@@ -116,35 +152,68 @@ namespace ApiCursos.Controllers.V1
                     return BadRequest(ModelState);
                 }
 
-                if (courseDto == null || courseId != courseDto.Id)
+                if (updateCourseDto == null || courseId != updateCourseDto.Id)
                 {
                     return BadRequest("Invalid data or ID mismatch.");
                 }
 
-                var course = _mapper.Map<Course>(courseDto);
+                var course = _mapper.Map<Course>(updateCourseDto);
 
-                if (!_courRepo.UpdateCourse(course))
+                if (updateCourseDto.Image != null)
                 {
-                    ModelState.AddModelError("", $"Something went wrong updating the course {course.Name}");
-                    return StatusCode(StatusCodes.Status500InternalServerError, ModelState);
+                    // Validación básica de tipo de archivo
+                    var extension = Path.GetExtension(updateCourseDto.Image.FileName).ToLower();
+                    if (extension != ".jpg" && extension != ".jpeg" && extension != ".png")
+                    {
+                        return BadRequest("Only .jpg, .jpeg and .png files are allowed.");
+                    }
+
+                    string nombreArchivo = course.Id + Guid.NewGuid().ToString() + extension;
+                    string rutaArchivo = @"wwwroot\CoursesImages\" + nombreArchivo;
+                    var ubicacionDirectorio = Path.Combine(Directory.GetCurrentDirectory(), rutaArchivo);
+
+                    // Asegurarnos que el directorio existe
+                    var directory = Path.GetDirectoryName(ubicacionDirectorio);
+                    if (!Directory.Exists(directory))
+                    {
+                        Directory.CreateDirectory(directory);
+                    }
+
+                    // Eliminar imagen anterior si existe
+                    if (!string.IsNullOrEmpty(course.ImageLocalRoute) && System.IO.File.Exists(course.ImageLocalRoute))
+                    {
+                        System.IO.File.Delete(course.ImageLocalRoute);
+                    }
+
+                    FileInfo file = new FileInfo(ubicacionDirectorio);
+                    if (file.Exists)
+                    {
+                        file.Delete();
+                    }
+
+                    using (var fileStream = new FileStream(ubicacionDirectorio, FileMode.Create))
+                    {
+                        updateCourseDto.Image.CopyTo(fileStream);
+                    }
+
+                    var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
+                    course.ImageRoute = baseUrl + "/CourseImages/" + nombreArchivo;
+                    course.ImageLocalRoute = rutaArchivo;
+                }
+                else
+                {
+                    course.ImageRoute = "https://placehold.co/600x400";
                 }
 
-                var updatedCourse = _courRepo.GetCourse(courseId);
-
-                if (updatedCourse == null)
-                {
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Failed to retrieve the updated course.");
-                }
-
-                var updatedCourseDto = _mapper.Map<CourseDto>(updatedCourse);
-
-                return Ok(updatedCourseDto);
+                _courRepo.UpdateCourse(course);
+                return NoContent();
             }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
             }
         }
+
 
         [AllowAnonymous]
         [HttpGet("GetCoursesInCategory/{categoryId:int}")]

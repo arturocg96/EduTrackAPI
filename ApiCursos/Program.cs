@@ -224,7 +224,7 @@ static void ConfigureMiddleware(WebApplication app)
             options.SwaggerEndpoint("/swagger/v2/swagger.json", "API Cursos V2");
         });
     }
-
+    app.UseStaticFiles();
     app.UseHttpsRedirection();
     app.UseCors("CorsPolicy");
     app.UseAuthentication();

@@ -14,6 +14,7 @@ namespace ApiCursos.CoursesMapper
             CreateMap<Category, CreateCategoryDto>().ReverseMap();
             CreateMap<Course, CourseDto>().ReverseMap();
             CreateMap<Course, CreateCourseDto>().ReverseMap();
+            CreateMap<Course, UpdateCourseDto>().ReverseMap();
             CreateMap<UserApp, UserDataDto>().ReverseMap();
             CreateMap<UserApp, UserDto>().ReverseMap();
         }
