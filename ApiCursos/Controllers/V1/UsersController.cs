@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ApiCursos.Repository.IRepository;
 using ApiCursos.Models.Dtos.UserDtos;
-using System.Net;
 using Asp.Versioning;
 using ApiCursos.Models;
 
@@ -66,6 +65,7 @@ namespace ApiCursos.Controllers.V1
 
             return CreatedAtRoute("GetUserById", new { userId = registeredUser.ID }, registeredUser);
         }
+
         [AllowAnonymous]
         [HttpPost("login")]
         [ProducesResponseType(StatusCodes.Status200OK)]

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiCursos.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250130121525_Preparación subida imágnes")]
-    partial class Preparaciónsubidaimágnes
+    [Migration("20250130175838_Creación de las tablas refactorizadas")]
+    partial class Creacióndelastablasrefactorizadas
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,7 +38,8 @@ namespace ApiCursos.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 

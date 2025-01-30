@@ -6,11 +6,12 @@ namespace ApiCursos.Models
     {
         [Key]
         public int Id { get; set; }
-        [Required]
 
-        public string? Name { get; set; }
         [Required]
-        public DateTime CreationDate { get; set; }  
+        [MaxLength(100)]
+        public string Name { get; set; } = string.Empty;
 
+        [Required]
+        public DateTime CreationDate { get; set; }
     }
 }

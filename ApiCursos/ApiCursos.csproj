@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <Folder Include="Controllers\V2\" />
+    <Folder Include="Migrations\" />
     <Folder Include="wwwroot\CoursesImages\" />
   </ItemGroup>
 

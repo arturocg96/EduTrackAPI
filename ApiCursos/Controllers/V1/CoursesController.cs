@@ -99,14 +99,12 @@ namespace ApiCursos.Controllers.V1
                     string fileName = course.Id + Guid.NewGuid().ToString() + extension;
                     string fileRoute = @"wwwroot\CoursesImages\" + fileName;
                     var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), fileRoute);
-
-                    // Asegurarnos que el directorio existe
+            
                     var directory = Path.GetDirectoryName(directoryPath);
-                    if (!Directory.Exists(directory))
+                    if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
                     {
                         Directory.CreateDirectory(directory);
                     }
-
                     FileInfo file = new FileInfo(directoryPath);
                     if (file.Exists)
                     {
@@ -172,9 +170,8 @@ namespace ApiCursos.Controllers.V1
                     string rutaArchivo = @"wwwroot\CoursesImages\" + nombreArchivo;
                     var ubicacionDirectorio = Path.Combine(Directory.GetCurrentDirectory(), rutaArchivo);
 
-                    // Asegurarnos que el directorio existe
                     var directory = Path.GetDirectoryName(ubicacionDirectorio);
-                    if (!Directory.Exists(directory))
+                    if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
                     {
                         Directory.CreateDirectory(directory);
                     }
