@@ -15,3 +15,4 @@ namespace ApiCursos.Models.Dtos.CategoryDtos
         public DateTime CreationDate { get; set; }
     }
 }
+

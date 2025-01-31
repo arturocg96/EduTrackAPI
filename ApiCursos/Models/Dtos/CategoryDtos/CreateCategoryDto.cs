@@ -9,3 +9,4 @@ namespace ApiCursos.Models.Dtos.CategoryDtos
         public string Name { get; set; } = string.Empty;
     }
 }
+

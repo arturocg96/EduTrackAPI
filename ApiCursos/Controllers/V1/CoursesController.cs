@@ -30,13 +30,35 @@ namespace ApiCursos.Controllers.V1
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public IActionResult GetCourses()
+        public IActionResult GetCourses([FromQuery] int pageNumber=1, [FromQuery] int pageSize = 10)
         {
-            var coursesListDto = _courRepo.GetCourses()
-                                           .Select(course => _mapper.Map<CourseDto>(course))
-                                           .ToList();
+            try
+            {
+                var totalCourses = _courRepo.GetTotalCourses();
+                var courses = _courRepo.GetCourses(pageNumber, pageSize);
 
-            return Ok(coursesListDto);
+                if (courses== null || !courses.Any())
+                {
+                    return NotFound("No se encontraron cursos.");
+                }
+
+                var coursesDto = courses.Select(c => _mapper.Map<CourseDto>(c)).ToList();
+
+                var response = new
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalPages = (int)Math.Ceiling(totalCourses / (double)pageSize),
+                    TotalItems = totalCourses,
+                    Items = coursesDto
+
+                };
+                return Ok(response);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error recuperando datos de la aplicación");
+            }
         }
 
         [AllowAnonymous]
@@ -88,8 +110,7 @@ namespace ApiCursos.Controllers.V1
                 var course = _mapper.Map<Course>(createCourseDto);
 
                 if (createCourseDto.Image != null)
-                {
-                    // Validación básica de tipo de archivo
+                {                  
                     var extension = Path.GetExtension(createCourseDto.Image.FileName).ToLower();
                     if (extension != ".jpg" && extension != ".jpeg" && extension != ".png")
                     {
@@ -159,7 +180,6 @@ namespace ApiCursos.Controllers.V1
 
                 if (updateCourseDto.Image != null)
                 {
-                    // Validación básica de tipo de archivo
                     var extension = Path.GetExtension(updateCourseDto.Image.FileName).ToLower();
                     if (extension != ".jpg" && extension != ".jpeg" && extension != ".png")
                     {
@@ -176,7 +196,6 @@ namespace ApiCursos.Controllers.V1
                         Directory.CreateDirectory(directory);
                     }
 
-                    // Eliminar imagen anterior si existe
                     if (!string.IsNullOrEmpty(course.ImageLocalRoute) && System.IO.File.Exists(course.ImageLocalRoute))
                     {
                         System.IO.File.Delete(course.ImageLocalRoute);
@@ -219,20 +238,24 @@ namespace ApiCursos.Controllers.V1
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetCoursesInCategory(int categoryId)
         {
-            var coursesList = _courRepo.GetAllCoursesByCategory(categoryId);
-
-            if (coursesList == null)
+            try
             {
-                return NotFound();
-            }
+                var coursesList = _courRepo.GetAllCoursesByCategory(categoryId);
 
-            var itemCourse = new List<CourseDto>();
-            foreach (var course in coursesList)
+                if (coursesList == null || !coursesList.Any())
+                {
+                    return NotFound($"No se encontraron cursos en la categoría con ID {categoryId}.");
+                }
+
+                var itemCourse = coursesList.Select(course => _mapper.Map<CourseDto>(course)).ToList();
+
+
+                return Ok(itemCourse);
+            }
+            catch (Exception)
             {
-                itemCourse.Add(_mapper.Map<CourseDto>(course));
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error recuperando datos de la aplicación");
             }
-
-            return Ok(itemCourse);
         }
 
 
@@ -246,12 +269,13 @@ namespace ApiCursos.Controllers.V1
             try
             {
                 var result = _courRepo.SearchCourse(name);
-                if (result.Any())
+                if (!result.Any())
                 {
-                    return Ok(result);
+                    return NotFound("No se encontraron cursos que coincidan con los criteerios de búisqueda.");
                 }
 
-                return NotFound();
+                var coursesDto = _mapper.Map<IEnumerable<CourseDto>>(result);
+                return Ok(coursesDto);
             }
             catch (Exception)
             {

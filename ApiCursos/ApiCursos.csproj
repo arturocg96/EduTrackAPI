@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>6b14635d-8c00-4345-af8a-56816ace2b6f</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,7 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\V2\" />
     <Folder Include="Migrations\" />
     <Folder Include="wwwroot\CoursesImages\" />
   </ItemGroup>

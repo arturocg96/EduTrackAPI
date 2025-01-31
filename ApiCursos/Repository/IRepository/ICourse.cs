@@ -4,7 +4,8 @@ namespace ApiCursos.Repository.IRepository
 {
     public interface ICourse
     {
-        ICollection<Course> GetCourses();
+        ICollection<Course> GetCourses(int pageNumber, int pageSize);
+        int GetTotalCourses();
 
         ICollection<Course> GetAllCoursesByCategory(int catId);
 
